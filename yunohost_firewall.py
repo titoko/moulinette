@@ -57,6 +57,8 @@ def firewall_allow(protocol=None, port=None, ipv6=None, upnp=False):
          portstart = int(port.split(':')[0])
          portend = int(port.split(':')[1])
 
+    if portstart>portend:
+        raise YunoHostError(22, _("Port ") + str(portend)+' is inferior to '+str(portstart))
     if upnp:
         add_portmapping(protocol, upnp, ipv6, 'a')
 
