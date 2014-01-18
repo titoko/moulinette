@@ -50,22 +50,30 @@ def firewall_allow(protocol=None, port=None, ipv6=None, upnp=False):
         ipv6 -- ipv6
 
     """
-    port = int(port)
+    if port.count(':')<1:
+        portstart = int(port)
+        portend = int(port)
+    else:
+         portstart = int(port.split(':')[0])
+         portend = int(port.split(':')[1])
+
     if upnp:
         add_portmapping(protocol, upnp, ipv6, 'a')
 
     if 0 < port < 65536:
         if protocol == "Both":
-            update_yml(port, 'TCP', 'a', ipv6, upnp)
-            update_yml(port, 'UDP', 'a', ipv6, upnp)
+            for port in range(portstart,portend):
+                update_yml(port, 'TCP', 'a', ipv6, upnp)
+                update_yml(port, 'UDP', 'a', ipv6, upnp)
 
         else:
-            update_yml(port, protocol, 'a', ipv6, upnp)
+            for port in range(portstart,portend):
+                update_yml(port, protocol, 'a', ipv6, upnp)
 
         win_msg(_("Port successfully openned"))
 
     else:
-        raise YunoHostError(22, _("Port not between 1 and 65535:") + str(port))
+        raise YunoHostError(22, _("Port not between 1 and 65535:") + str(portend))
 
     return firewall_reload(upnp)
 
