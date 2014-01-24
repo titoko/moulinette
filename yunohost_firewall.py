@@ -50,7 +50,7 @@ def firewall_allow(protocol=None, port=None, ipv6=None, upnp=False):
         ipv6 -- ipv6
 
     """
-    if port.count(':')<1
+    if port.count(':')<1:
         portstart = int(port)
         portend = int(port)
     else:
@@ -69,7 +69,7 @@ def firewall_allow(protocol=None, port=None, ipv6=None, upnp=False):
                 update_yml(port, 'UDP', 'a', ipv6, upnp)
 
         else:
-            for port in range(portstart,portend):
+            for port in range(portstart,portend+1):
                 update_yml(port, protocol, 'a', ipv6, upnp)
 
         win_msg(_("Port successfully openned"))
@@ -91,13 +91,24 @@ def firewall_disallow(protocol=None, port=None, ipv6=None, upnp=False):
         ipv6 -- ipv6
 
     """
-
-    port = int(port)
-    if protocol == "Both":
-        update_yml(port, 'TCP', 'r', ipv6, upnp)
-        update_yml(port, 'UDP', 'r', ipv6, upnp)
+    if port.count(':')<1:
+        portstart = int(port)
+        portend = int(port)
     else:
-        update_yml(port, protocol, 'r', ipv6, upnp)
+        portstart = int(port.split(':')[0])
+        portend = int(port.split(':')[1])
+
+    if portstart>portend:
+        raise YunoHostError(22, _("Port ") + str(portend)+' is inferior to '+str(portstart))
+
+    if protocol == "Both":
+        for port in range(portstart,portend+1):
+            update_yml(port, 'TCP', 'r', ipv6, upnp)
+            update_yml(port, 'UDP', 'r', ipv6, upnp)
+    else:
+        for port in range(portstart,portend+1):
+            update_yml(port, protocol, 'r', ipv6, upnp)
+    
     win_msg(_("Port successfully closed"))
 
     return firewall_reload(upnp)
@@ -154,7 +165,7 @@ def firewall_reload(upnp=False):
         add_portmapping('UDP', upnp, True, 'r')
         ipv6 = True
     
-    #hook_callback('post_iptable_rules', [upnp, ipv6])
+    hook_callback('post_iptable_rules', [upnp, ipv6])
 
     os.system("iptables -A INPUT -i lo -j ACCEPT")
     os.system("iptables -A INPUT -p icmp -j ACCEPT")
