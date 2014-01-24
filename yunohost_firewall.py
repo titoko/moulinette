@@ -50,7 +50,7 @@ def firewall_allow(protocol=None, port=None, ipv6=None, upnp=False):
         ipv6 -- ipv6
 
     """
-    if port.count(':')<1:
+    if port.count(':')<1
         portstart = int(port)
         portend = int(port)
     else:
@@ -62,9 +62,9 @@ def firewall_allow(protocol=None, port=None, ipv6=None, upnp=False):
     if upnp:
         add_portmapping(protocol, upnp, ipv6, 'a')
 
-    if 0 < port < 65536:
+    if 0 < portend < 65536:
         if protocol == "Both":
-            for port in range(portstart,portend):
+            for port in range(portstart,portend+1):
                 update_yml(port, 'TCP', 'a', ipv6, upnp)
                 update_yml(port, 'UDP', 'a', ipv6, upnp)
 
@@ -154,7 +154,7 @@ def firewall_reload(upnp=False):
         add_portmapping('UDP', upnp, True, 'r')
         ipv6 = True
     
-    hook_callback('post_iptable_rules', [upnp, ipv6])
+    #hook_callback('post_iptable_rules', [upnp, ipv6])
 
     os.system("iptables -A INPUT -i lo -j ACCEPT")
     os.system("iptables -A INPUT -p icmp -j ACCEPT")
