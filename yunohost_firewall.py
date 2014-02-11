@@ -285,10 +285,10 @@ def add_portmapping(protocol=None, upnp=False, ipv6=None, mode=None,):
                     upnpc.selectigd()
                     
                     if port.count(':')>0:
-                        for i in range (port.split(':')[0],port.split(':')[1]):
-                            upnpc.addportmapping(port, protocol, upnpc.lanaddr, port, 'yunohost firewall : port %u' % port, '')
+                        for ports in range (port.split(':')[0],port.split(':')[1]):
+                            upnpc.addportmapping(ports, protocol, upnpc.lanaddr, ports, 'yunohost firewall : port %u' % int(ports), '')
                     else:
-                        upnpc.addportmapping(port, protocol, upnpc.lanaddr, port, 'yunohost firewall : port %u' % port, '')
+                        upnpc.addportmapping(int(port), protocol, upnpc.lanaddr, int(port), 'yunohost firewall : port %u' % int(port), '')
 
     os.system("iptables -P INPUT DROP")
 
