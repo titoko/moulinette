@@ -1,3 +1,4 @@
+
 # -*- coding: utf-8 -*-
 
 """ License
@@ -37,7 +38,7 @@ except ImportError:
     sys.stderr.write('apt-get install python-yaml\n')
     sys.exit(1)
 from yunohost import YunoHostError, win_msg
-
+from yunohost_hook import hook_callback
 
 def firewall_allow(protocol=None, port=None, ipv6=None, upnp=False):
     """
@@ -50,7 +51,7 @@ def firewall_allow(protocol=None, port=None, ipv6=None, upnp=False):
         ipv6 -- ipv6
 
     """
-    if port.count(':')>1:
+    if port.count(':')>0:
         if port.split(':')[0]>port.split(':')[1]:
             raise YunoHostError(22, _("First port must be inferior to Second port"))
         else:
@@ -63,7 +64,7 @@ def firewall_allow(protocol=None, port=None, ipv6=None, upnp=False):
     if upnp:
         add_portmapping(protocol, upnp, ipv6, 'a')
 
-    if 0 < portstart && portend < 65536:
+    if 0 < portstart and portend < 65536:
         if protocol == "Both":
             update_yml(port, 'TCP', 'a', ipv6, upnp)
             update_yml(port, 'UDP', 'a', ipv6, upnp)
@@ -128,8 +129,8 @@ def firewall_reload(upnp=False):
     os.system("iptables -X")
     os.system("iptables -A INPUT -m state --state ESTABLISHED -j ACCEPT")
 
-    if 22 not in firewall['ipv4']['TCP']:
-        update_yml(22, 'TCP', 'a', False)
+    if '22' not in firewall['ipv4']['TCP']:
+        update_yml('22', 'TCP', 'a', False)
 
     if os.path.exists("/proc/net/if_inet6"):
         os.system("ip6tables -P INPUT ACCEPT")
@@ -137,8 +138,8 @@ def firewall_reload(upnp=False):
         os.system("ip6tables -X")
         os.system("ip6tables -A INPUT -m state --state ESTABLISHED -j ACCEPT")
 
-    if 22 not in firewall['ipv6']['TCP']:
-        update_yml(22, 'TCP', 'a', False)
+    if '22' not in firewall['ipv6']['TCP']:
+        update_yml('22', 'TCP', 'a', False)
 
     if upnp:
         remove_portmapping()
